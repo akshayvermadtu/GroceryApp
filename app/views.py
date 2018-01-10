@@ -7,6 +7,7 @@ from .serializers import StructureSerializer
 from .serializers import StructureCatSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from PIL import Image
 from .models import User
@@ -16,36 +17,33 @@ from .models import Structure
 import ast
 
 
-class UserResponse(APIView):
+class UserSignUp(APIView):
 
     def post(self, request):
 
-        try:
-
-            u = User()
             user_data = request.data
-
-            user_name = user_data['name']
-            u.name = user_name
-            _ = u.save()
             user_phone = user_data['phone']
-            u.phone = user_phone
-            u.save()
-            user_password = user_data['password']
-            u.password = user_password
-            u.save()
-            user_address = user_data['address']
-            u.address = user_address
-            u.save()
+            check = User.objects.filter(phone=user_phone)
+            serialized_data = UserSerializer(check, many=True)
+            if serialized_data.data:
+                return Response({'status': 'User already exists'})
+            else:
+                u = User()
+                user_phone = user_data['phone']
+                u.phone = user_phone
+                user_name = user_data['name']
+                u.name = user_name
 
-        except IOError:
-            return Response({'message': 'failure'})
+                user_password = user_data['password']
+                u.password = user_password
 
-        else:
-            return Response({'message': 'success'})
+                user_address = user_data['address']
+                u.address = user_address
+                u.save()
+                return Response({'status': 'success'})
 
 
-class UserCheck(APIView):
+class UserLogIn(APIView):
 
     def post(self, request):
 
@@ -57,7 +55,7 @@ class UserCheck(APIView):
             check = User.objects.filter(phone=user_phone)
             serialized_data = UserSerializer(check, many=True)
             if user_password == serialized_data.data[0]['password']:
-                return Response({'login': 'success'})
+                return Response({'login': 'success', 'id': serialized_data.data[0]['id']})
 
             else:
                 return Response({'login': 'wrong password'})
@@ -92,12 +90,21 @@ class GetItem(APIView):
 
         item_data = request.data
         item_sub_category = item_data['sub_category']
+        page_no = item_data['page_no']
         try:
             response_data = Item.objects.filter(sub_category=item_sub_category)
             if not response_data:
                 return Response({'status': 'no category found'})
             else:
-                serialized_data = ItemSerializer(response_data, many=True)
+
+                paginator = Paginator(response_data, 10)
+                try:
+                    serialized_data = ItemSerializer(paginator.page(page_no), many=True)
+                except PageNotAnInteger:
+                    serialized_data = ItemSerializer(paginator.page(1), many=True)
+                    return Response(serialized_data.data)
+                except EmptyPage:
+                    return Response([{'status': 'no more data'}])
 
         except IOError:
             return Response({'status': 'no data'})
@@ -212,18 +219,22 @@ class RemoveFromCart(APIView):
 
     def post(self, request):
 
-        data = request.data
-        item_name = data['item_name']
-        customer_id = data['customer_id']
+        try:
+            data = request.data
+            item_name = data['item_name']
+            customer_id = data['customer_id']
 
-        user_data = User.objects.filter(id=customer_id)
-        serialized_data = UserSerializer(user_data, many=True)
-        cart_data = serialized_data.data[0]['cart']
-        new_cart = ast.literal_eval(cart_data)
-        del new_cart[item_name]
-        User.objects.filter(id=customer_id).update(cart=new_cart)
+            user_data = User.objects.filter(id=customer_id)
+            serialized_data = UserSerializer(user_data, many=True)
+            cart_data = serialized_data.data[0]['cart']
+            new_cart = ast.literal_eval(cart_data)
+            del new_cart[item_name]
+            User.objects.filter(id=customer_id).update(cart=new_cart)
 
-        return Response({'status': 'success'})
+            return Response({'status': 'success'})
+
+        except IOError:
+            return Response({'status': 'error'})
 
 
 class MyDetails(APIView):
@@ -252,3 +263,26 @@ class MyOrders(APIView):
         serialized_data = MyOrderSerializer(user_orders, many=True)
 
         return Response(serialized_data.data)
+
+
+class SearchItems(APIView):
+
+    def post(self, request):
+        search_data = request.data
+        search_item = search_data['text']
+        page_no = search_data['page_no']
+
+        item_details = Item.objects.filter(name__contains=search_item)
+        paginator = Paginator(item_details, 10)
+
+        try:
+            serialized_data = ItemSerializer(paginator.page(page_no), many=True)
+            return Response(serialized_data.data)
+        except PageNotAnInteger:
+            serialized_data = ItemSerializer(paginator.page(1), many=True)
+            return Response(serialized_data.data)
+        except EmptyPage:
+            # serialized_data = ItemSerializer(paginator.page(paginator.num_pages), many=True)
+            # return Response(serialized_data.data)
+            return Response([{'status': 'no more data'}])
+

@@ -50,7 +50,7 @@ class Offer(models.Model):
 class Structure(models.Model):
     category_name = models.CharField(max_length=50)
     sub_category_name = models.TextField()
-    image = models.ImageField(upload_to="CatImages", default='CatImages/default_cat_icon.png')
+    image = models.ImageField(upload_to="static/CatImages", default='static/CatImages/default_cat_icon.png')
 
     def __str__(self):
         return self.category_name

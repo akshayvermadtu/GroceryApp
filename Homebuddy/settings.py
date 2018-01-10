@@ -14,7 +14,7 @@ SECRET_KEY = 'nt0woe819jx_3+f9ki@z1vm77r0w-ia=#et4g*v0f6tq)uqwk)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '192.168.43.43', 'homebuddy2018.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '192.168.43.43', 'homebuddy2018.herokuapp.com', '192.168.1.5']
 
 
 # Application definition

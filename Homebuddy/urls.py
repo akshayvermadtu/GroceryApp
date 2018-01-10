@@ -5,8 +5,8 @@ from app import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^register/', views.UserResponse.as_view()),
-    url(r'^login/', views.UserCheck.as_view()),
+    url(r'^register/', views.UserSignUp.as_view()),
+    url(r'^login/', views.UserLogIn.as_view()),
     url(r'^items/', views.GetItem.as_view()),
     url(r'^showCat/', views.ViewCategories.as_view()),
     url(r'^showSubCat/', views.ViewSubCategories.as_view()),
@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^removeCart/', views.RemoveFromCart.as_view()),
     url(r'^myDetails/', views.MyDetails.as_view()),
     url(r'^myOrders/', views.MyOrders.as_view()),
+    url(r'^search/', views.SearchItems.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
