@@ -210,7 +210,7 @@ class PlaceOrder(APIView):
 class ViewOrders(APIView):
 
     def get(self, request):
-        orders = Order.objects.all()
+        orders = Order.objects.all().order_by('-id')
         serialized_data = OrderSerializer(orders, many=True)
         return Response(serialized_data.data)
 

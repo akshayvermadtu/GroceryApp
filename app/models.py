@@ -35,7 +35,7 @@ class Order(models.Model):
     amount = models.FloatField(null=True)
     status = models.CharField(max_length=10)
     delivery_type = models.CharField(max_length=4, default='cod')
-    order_time = models.DateTimeField(blank=False)
+    order_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.customer_address
