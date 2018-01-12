@@ -1,5 +1,6 @@
 from django.db import models
 import jsonfield
+from datetime import datetime
 
 
 class User(models.Model):
@@ -33,7 +34,8 @@ class Order(models.Model):
     item_list = jsonfield.JSONField(default={})
     amount = models.FloatField(null=True)
     status = models.CharField(max_length=10)
-    delivery_type = models.CharField(max_length=4, default='cod3')
+    delivery_type = models.CharField(max_length=4, default='cod')
+    order_time = models.DateTimeField(default=datetime.now, blank=True)
 
     def __str__(self):
         return self.customer_address
