@@ -269,7 +269,7 @@ class SearchItems(APIView):
 
     def post(self, request):
         search_data = request.data
-        search_item = search_data['text']
+        search_item = search_data['text'].lower()
         page_no = search_data['page_no']
 
         item_details = Item.objects.filter(name__contains=search_item)
