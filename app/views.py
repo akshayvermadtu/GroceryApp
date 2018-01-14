@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from .serializers import UserSerializer
 from .serializers import ItemSerializer
 from .serializers import OrderSerializer
@@ -8,8 +7,6 @@ from .serializers import StructureCatSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from PIL import Image
 from .models import User
 from .models import Item
 from .models import Order
@@ -154,15 +151,6 @@ class AddCart(APIView):
             return Response({'status': 'Added to your cart'})
 
 
-def image(request):
-
-    image_name = request
-    image_response = Image.open("Images/" + image_name)
-    response = HttpResponse(content_type="image/png")
-    image_response.save(response, "PNG")
-    return response
-
-
 class PlaceOrder(APIView):
 
     def post(self, request):
@@ -211,6 +199,22 @@ class ViewOrders(APIView):
 
     def get(self, request):
         orders = Order.objects.all().order_by('-id')
+        serialized_data = OrderSerializer(orders, many=True)
+        return Response(serialized_data.data)
+
+
+class ViewPendingOrders(APIView):
+
+    def get(self, request):
+        orders = Order.objects.filter(status="placed").order_by('-id')
+        serialized_data = OrderSerializer(orders, many=True)
+        return Response(serialized_data.data)
+
+
+class ViewDeliveredOrders(APIView):
+
+    def get(self, request):
+        orders = Order.objects.filter(status="Delivered").order_by('-id')
         serialized_data = OrderSerializer(orders, many=True)
         return Response(serialized_data.data)
 
@@ -286,3 +290,38 @@ class SearchItems(APIView):
             # return Response(serialized_data.data)
             return Response([{'status': 'no more data'}])
 
+
+class EditItemDetails(APIView):
+
+    def post(self, request):
+        item_data = request.data
+        item_name = item_data['item_name']
+        item_new_price = item_data['new_price']
+
+        Item.objects.filter(name=item_name).update(price=item_new_price)
+
+        return Response({'status': 'success'})
+
+
+class Revenue(APIView):
+
+    def get(self, request):
+        order_data = Order.objects.all().order_by('-id')
+        serialized_data = OrderSerializer(order_data, many=True)
+        bill = 0
+        for i in range(len(serialized_data.data)):
+            amount = serialized_data.data[i]['amount']
+            bill = amount + float(bill)
+
+        return Response({'revenue': bill})
+
+
+class ChangeStatus(APIView):
+
+    def post(self, request):
+        order_data = request.data
+        order_id = order_data['id']
+
+        Order.objects.filter(id=order_id).update(status='Delivered')
+
+        return Response({'status': 'success'})

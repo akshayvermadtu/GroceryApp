@@ -12,13 +12,17 @@ urlpatterns = [
     url(r'^showSubCat/', views.ViewSubCategories.as_view()),
     url(r'^showCart/', views.ShowCart.as_view()),
     url(r'^addCart/', views.AddCart.as_view()),
-    url(r'^image/', views.image),
     url(r'^placeOrder/', views.PlaceOrder.as_view()),
     url(r'^viewOrders/', views.ViewOrders.as_view()),
+    url(r'^viewPendingOrders/', views.ViewPendingOrders.as_view()),
+    url(r'^viewDeliveredOrders/', views.ViewDeliveredOrders.as_view()),
     url(r'^removeCart/', views.RemoveFromCart.as_view()),
     url(r'^myDetails/', views.MyDetails.as_view()),
     url(r'^myOrders/', views.MyOrders.as_view()),
     url(r'^search/', views.SearchItems.as_view()),
+    url(r'^editItem/', views.EditItemDetails.as_view()),
+    url(r'^revenue/', views.Revenue.as_view()),
+    url(r'^changeStatus/', views.ChangeStatus.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
