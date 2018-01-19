@@ -1,14 +1,23 @@
 from django.db import models
 import jsonfield
-from datetime import datetime
 
 
 class User(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=25)
     phone = models.BigIntegerField(null=True)
     address = models.TextField()
     password = models.CharField(max_length=10)
     cart = jsonfield.JSONField(default={})
+
+    def __str__(self):
+        return self.name
+
+
+class Deliverer(models.Model):
+    name = models.CharField(max_length=25)
+    phone = models.BigIntegerField(null=True)
+    password = models.CharField(max_length=10)
+    location = models.CharField(max_length=25, default=None)
 
     def __str__(self):
         return self.name
@@ -29,13 +38,14 @@ class Item(models.Model):
 
 class Order(models.Model):
     customer_id = models.PositiveIntegerField(null=True)
-    customer_name = models.CharField(max_length=30)
+    customer_name = models.CharField(max_length=25)
     customer_address = models.TextField()
     item_list = jsonfield.JSONField(default={})
     amount = models.FloatField(null=True)
     status = models.CharField(max_length=10)
     delivery_type = models.CharField(max_length=4, default='cod')
     order_time = models.DateTimeField(auto_now_add=True)
+    delivery_boy = models.CharField(max_length=25, default=' ')
 
     def __str__(self):
         return self.customer_address
@@ -52,7 +62,8 @@ class Offer(models.Model):
 class Structure(models.Model):
     category_name = models.CharField(max_length=50)
     sub_category_name = models.TextField()
-    image = models.ImageField(upload_to="static/CatImages", default='static/CatImages/default_cat_icon.png')
+    image = models.ImageField(upload_to="static/CatImages",
+                              default='static/CatImages/default_cat_icon.png')
 
     def __str__(self):
         return self.category_name

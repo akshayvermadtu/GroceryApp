@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^register/', views.UserSignUp.as_view()),
     url(r'^login/', views.UserLogIn.as_view()),
+    url(r'^boyLogin/', views.DeliveryBoyLogIn.as_view()),
     url(r'^items/', views.GetItem.as_view()),
     url(r'^showCat/', views.ViewCategories.as_view()),
     url(r'^showSubCat/', views.ViewSubCategories.as_view()),
@@ -23,6 +24,8 @@ urlpatterns = [
     url(r'^editItem/', views.EditItemDetails.as_view()),
     url(r'^revenue/', views.Revenue.as_view()),
     url(r'^changeStatus/', views.ChangeStatus.as_view()),
+    url(r'^forwardOrder/', views.ForwardOrder.as_view()),
+    url(r'^myBoys/', views.DeliveryBoyDetails.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

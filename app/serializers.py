@@ -3,12 +3,20 @@ from .models import User
 from .models import Item
 from .models import Order
 from .models import Structure
+from .models import Deliverer
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+        fields = '__all__'
+
+
+class DeliveryBoySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Deliverer
         fields = '__all__'
 
 

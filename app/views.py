@@ -4,6 +4,7 @@ from .serializers import OrderSerializer
 from .serializers import MyOrderSerializer
 from .serializers import StructureSerializer
 from .serializers import StructureCatSerializer
+from .serializers import DeliveryBoySerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -11,6 +12,7 @@ from .models import User
 from .models import Item
 from .models import Order
 from .models import Structure
+from .models import Deliverer
 import ast
 
 
@@ -53,6 +55,28 @@ class UserLogIn(APIView):
             serialized_data = UserSerializer(check, many=True)
             if user_password == serialized_data.data[0]['password']:
                 return Response({'login': 'success', 'id': serialized_data.data[0]['id']})
+
+            else:
+                return Response({'login': 'wrong password'})
+
+        except IOError:
+            return Response({'login': 'User not registered'})
+
+
+class DeliveryBoyLogIn(APIView):
+
+    def post(self, request):
+
+        user_data = request.data
+        user_phone = user_data['phone']
+        user_password = user_data['password']
+
+        try:
+            check = Deliverer.objects.filter(phone=user_phone)
+            serialized_data = DeliveryBoySerializer(check, many=True)
+            if user_password == serialized_data.data[0]['password']:
+                return Response({'login': 'success', 'id': serialized_data.data[0]['id'],
+                                 'name': serialized_data.data[0]['name']})
 
             else:
                 return Response({'login': 'wrong password'})
@@ -320,8 +344,37 @@ class ChangeStatus(APIView):
 
     def post(self, request):
         order_data = request.data
-        order_id = order_data['id']
+        order_id = order_data['order_id']
 
         Order.objects.filter(id=order_id).update(status='Delivered')
 
         return Response({'status': 'success'})
+
+
+class ForwardOrder(APIView):
+
+    def post(self, request):
+        order_id = request.data['id']
+        delivery_boy = request.data['delivery_boy']
+
+        Order.objects.filter(id=order_id).update(delivery_boy=delivery_boy)
+
+        return Response({'status': 'success'})
+
+
+class DeliveryBoyOrders(APIView):
+
+    def post(self, request):
+        delivery_boy = request.data['delivery_boy']
+        orders = Order.objects.filter(delivery_boy=delivery_boy)
+
+        serialized_data = OrderSerializer(orders, many=True)
+        return Response(serialized_data.data)
+
+
+class DeliveryBoyDetails(APIView):
+
+    def get(self, request):
+        delivery_boys = Deliverer.objects.all().order_by('-id')
+        serialized_data = DeliveryBoySerializer(delivery_boys, many=True)
+        return Response(serialized_data.data)
