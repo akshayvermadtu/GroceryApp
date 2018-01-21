@@ -354,10 +354,11 @@ class ChangeStatus(APIView):
 class ForwardOrder(APIView):
 
     def post(self, request):
-        order_id = request.data['id']
-        delivery_boy = request.data['delivery_boy']
+        order_id = request.data['order_id']
+        delivery_boy_id = request.data['boy_id']
 
-        Order.objects.filter(id=order_id).update(delivery_boy=delivery_boy)
+        Order.objects.filter(id=order_id).update(delivery_boy=delivery_boy_id)
+        Order.objects.filter(id=order_id).update(status="progress")
 
         return Response({'status': 'success'})
 
@@ -365,8 +366,8 @@ class ForwardOrder(APIView):
 class DeliveryBoyOrders(APIView):
 
     def post(self, request):
-        delivery_boy = request.data['delivery_boy']
-        orders = Order.objects.filter(delivery_boy=delivery_boy)
+        delivery_boy_id = request.data['boy_id']
+        orders = Order.objects.filter(delivery_boy=delivery_boy_id)
 
         serialized_data = OrderSerializer(orders, many=True)
         return Response(serialized_data.data)
