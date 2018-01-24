@@ -367,7 +367,7 @@ class DeliveryBoyOrders(APIView):
 
     def post(self, request):
         delivery_boy_id = request.data['boy_id']
-        orders = Order.objects.filter(delivery_boy=delivery_boy_id)
+        orders = Order.objects.filter(delivery_boy=delivery_boy_id, status="progress").order_by('-id')
 
         serialized_data = OrderSerializer(orders, many=True)
         return Response(serialized_data.data)
@@ -379,3 +379,14 @@ class DeliveryBoyDetails(APIView):
         delivery_boys = Deliverer.objects.all().order_by('-id')
         serialized_data = DeliveryBoySerializer(delivery_boys, many=True)
         return Response(serialized_data.data)
+
+
+class DelivererLocation(APIView):
+
+    def post(self, request):
+        delivery_boy_id = request.data['boy_id']
+        delivery_boy_lat = request.data['lat']
+        delivery_boy_lng = request.data['lng']
+        Deliverer.objects.filter(id=delivery_boy_id).update(location=(float(delivery_boy_lat), float(delivery_boy_lng)))
+
+        return Response({'status': 'success'})
