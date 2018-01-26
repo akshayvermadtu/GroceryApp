@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^myBoys/', views.DeliveryBoyDetails.as_view()),
     url(r'^boyOrders/', views.DeliveryBoyOrders.as_view()),
     url(r'^locationUpdate/', views.DelivererLocation.as_view()),
+    url(r'^bill/', views.NetBillAmount.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -390,3 +390,22 @@ class DelivererLocation(APIView):
         Deliverer.objects.filter(id=delivery_boy_id).update(location=(float(delivery_boy_lat), float(delivery_boy_lng)))
 
         return Response({'status': 'success'})
+
+
+class NetBillAmount(APIView):
+
+    def post(self, request):
+        customer_id = request.data['id']
+        user_data = User.objects.filter(id=customer_id)
+        serialized_data = UserSerializer(user_data, many=True)
+
+        bill = 0
+        item_list = ast.literal_eval(serialized_data.data[0]['cart'])
+        for item, amount in item_list.items():
+            item_data_model = Item.objects.filter(name=item)
+            item_serialized_data = ItemSerializer(item_data_model, many=True)
+            item_price = item_serialized_data.data[0]['price']
+            net_price = float(amount) * item_price
+            bill = float(bill) + net_price
+
+        return Response({'bill': bill})
