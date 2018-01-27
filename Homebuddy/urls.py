@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^viewOrders/', views.ViewOrders.as_view()),
     url(r'^viewPendingOrders/', views.ViewPendingOrders.as_view()),
     url(r'^viewDeliveredOrders/', views.ViewDeliveredOrders.as_view()),
+    url(r'^viewProgressOrders/', views.ViewProgressOrders.as_view()),
     url(r'^removeCart/', views.RemoveFromCart.as_view()),
     url(r'^myDetails/', views.MyDetails.as_view()),
     url(r'^myOrders/', views.MyOrders.as_view()),

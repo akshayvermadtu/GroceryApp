@@ -243,6 +243,14 @@ class ViewDeliveredOrders(APIView):
         return Response(serialized_data.data)
 
 
+class ViewProgressOrders(APIView):
+
+    def get(self, request):
+        orders = Order.objects.filter(status="progress").order_by('-id')
+        serialized_data = OrderSerializer(orders, many=True)
+        return Response(serialized_data.data)
+
+
 class RemoveFromCart(APIView):
 
     def post(self, request):
