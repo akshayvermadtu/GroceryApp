@@ -14,6 +14,8 @@ from .models import Order
 from .models import Structure
 from .models import Deliverer
 import ast
+from django.http import HttpResponse
+from django.template import Context, loader
 
 
 class UserSignUp(APIView):
@@ -417,3 +419,8 @@ class NetBillAmount(APIView):
             bill = float(bill) + net_price
 
         return Response({'bill': bill})
+
+
+def index(request):
+    template = loader.get_template("index.html")
+    return HttpResponse(template.render())
